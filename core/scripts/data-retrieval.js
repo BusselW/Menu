@@ -350,7 +350,7 @@
          * @returns {string} Unique ID
          */
         generateId() {
-            return 'menu_' + Math.random().toString(36).substr(2, 9);
+            return 'menu_' + Math.random().toString(36).substring(2, 11);
         }
 
         /**

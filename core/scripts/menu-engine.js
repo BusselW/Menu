@@ -552,7 +552,9 @@
             const items = this.getFocusableItems(current.closest('ul'));
             const currentIndex = items.indexOf(current);
             const nextIndex = (currentIndex + 1) % items.length;
-            items[nextIndex]?.focus();
+            if (items[nextIndex]) {
+                items[nextIndex].focus();
+            }
         }
 
         /**
@@ -563,7 +565,9 @@
             const items = this.getFocusableItems(current.closest('ul'));
             const currentIndex = items.indexOf(current);
             const prevIndex = (currentIndex - 1 + items.length) % items.length;
-            items[prevIndex]?.focus();
+            if (items[prevIndex]) {
+                items[prevIndex].focus();
+            }
         }
 
         /**
@@ -574,7 +578,9 @@
             const submenu = current.parentElement.querySelector('.sp-menu__secondary, .sp-menu__tertiary');
             if (submenu) {
                 const items = this.getFocusableItems(submenu);
-                items[0]?.focus();
+                if (items[0]) {
+                    items[0].focus();
+                }
             }
         }
 
@@ -583,11 +589,14 @@
          * @param {HTMLElement} current - Current focused element
          */
         focusParentItem(current) {
-            const parentLi = current.closest('.sp-menu__secondary-item, .sp-menu__tertiary-item')
-                            ?.parentElement?.closest('li');
+            var closestItem = current.closest('.sp-menu__secondary-item, .sp-menu__tertiary-item');
+            var parentLi = closestItem ? closestItem.parentElement : null;
+            parentLi = parentLi ? parentLi.closest('li') : null;
             if (parentLi) {
                 const link = parentLi.querySelector('a');
-                link?.focus();
+                if (link) {
+                    link.focus();
+                }
             }
         }
 
@@ -596,7 +605,9 @@
          */
         focusFirstItem() {
             const items = this.container.querySelectorAll('.sp-menu__primary-link');
-            items[0]?.focus();
+            if (items[0]) {
+                items[0].focus();
+            }
         }
 
         /**
@@ -604,7 +615,9 @@
          */
         focusLastItem() {
             const items = this.container.querySelectorAll('.sp-menu__primary-link');
-            items[items.length - 1]?.focus();
+            if (items[items.length - 1]) {
+                items[items.length - 1].focus();
+            }
         }
 
         /**
