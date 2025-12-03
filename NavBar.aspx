@@ -6,91 +6,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Navigation System</title>
 
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-
-    <!-- Navigation Styles -->
-    <link rel="stylesheet" href="https://som.org.om.local/sites/MulderT/CustomPW/HBS/MENU/CSS/navigation-styles.css">
-    
-    <!-- Core dependencies - jQuery first, then TailwindCSS -->
-    <script src="https://som.org.om.local/sites/MulderT/CustomPW/_scripts/jquery371min.js"></script>
-    
-    <!-- Load Tailwind Configuration before Tailwind CSS -->
-    <script src="https://som.org.om.local/sites/MulderT/CustomPW/HBS/MENU/JS/tailwind-configuration.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- SharePoint JS Libraries -->
-    <script type="text/javascript" src="/_layouts/15/init.js"></script>
-    <script type="text/javascript" src="/_layouts/15/MicrosoftAjax.js"></script>
-    <script type="text/javascript" src="/_layouts/15/sp.runtime.js"></script>
-    <script type="text/javascript" src="/_layouts/15/sp.js"></script>
-    
-    <!-- Critical styling fixes -->
-    <link rel="stylesheet" href="https://som.org.om.local/sites/MulderT/CustomPW/HBS/MENU/CSS/fix-theming.css"></script>
-</head>
-
-<body class="bg-gray-50 font-sans">
-    <!-- Direct Menu Loading Script -->
+    <!-- ========================================== -->
+    <!-- CENTRALE CONFIGURATIE & VARIABELEN         -->
+    <!-- ========================================== -->
     <script>
-        // Configuration
-        const CONFIG = {
+        // --- 1. Basis Paden & Instellingen ---
+        const SETTINGS = {
+            // De hoofd URL van de site
+            siteRoot: "https://som.org.om.local/sites/MulderT",
+            
+            // Het pad naar de CustomPW map
+            customPwRoot: "https://som.org.om.local/sites/MulderT/CustomPW",
+            
+            // GUIDs voor de SharePoint lijsten
+            listGuids: {
+                navigation: "69832e47-6f67-4bb1-bb3d-dd1eda4d8db9",
+                calendar: "e57d552c-a51d-4f2b-9fff-a7de1252fb5d"
+            },
+            
+            // Debugging inschakelen?
+            debug: false
+        };
+
+        // --- 2. Afgeleide Paden (Automatisch gegenereerd) ---
+        const PATHS = {
+            menuAssets: `${SETTINGS.customPwRoot}/HBS/MENU`,
+            navbarEdit: `${SETTINGS.customPwRoot}/HBS/NAVBAR/NAVBAREDIT`,
+            scripts: `${SETTINGS.customPwRoot}/_scripts`
+        };
+
+        // --- 3. Applicatie Configuratie (CONFIG object) ---
+        // Dit object wordt gebruikt door de applicatie scripts
+        window.CONFIG = {
             site: {
-                root: "https://som.org.om.local/sites/MulderT",
+                root: SETTINGS.siteRoot,
                 detectSubsites: true
             },
             branding: {
-                theme: "blue", // Options: blue, orange, purple, green, red, turquoise
+                theme: "blue", // Opties: blue, orange, purple, green, red, turquoise
                 applyToHeader: true,
                 applyToContent: true,
-                customHeader: "" // Optional: custom header text, leave empty to use default "Navigatie"
+                customHeader: "" // Optioneel: aangepaste header tekst
             },
             navigation: {
-                listGuid: "69832e47-6f67-4bb1-bb3d-dd1eda4d8db9",
+                listGuid: SETTINGS.listGuids.navigation,
                 container: "#menu",
-                hoverDelay: 300, // Delay in ms for hover menu expansion
-                forceClickBehavior: false, // When true, always uses click to expand instead of hover
+                hoverDelay: 300,
+                forceClickBehavior: false,
                 editButton: {
                     enabled: true,
-                    url: "https://som.org.om.local/sites/MulderT/CustomPW/HBS/NAVBAR/NAVBAREDIT/navbar-editor.aspx",
-                    allowedRoles: ["Owner", "Administrator"], // SharePoint groups allowed to see edit button
-                    showForCurrentUser: true // Fall back option to override permissions check
+                    url: `${PATHS.navbarEdit}/navbar-editor.aspx`,
+                    allowedRoles: ["Owner", "Administrator"],
+                    showForCurrentUser: true
                 }
             },
-// In your config:
-calendar: {
-    enabled: true,
-    listGuid: "e57d552c-a51d-4f2b-9fff-a7de1252fb5d",
-    container: "#calendar-container",
-    title: "Planning",
-    itemCount: 5,
-    showPagination: true,
-    baseUrl: "https://som.org.om.local/sites/MulderT", // Add your SharePoint site URL here
-    addEventUrl: "https://som.org.om.local/sites/MulderT/Lists/YourCalendarList/NewForm.aspx",
-    editEventUrl: "https://som.org.om.local/sites/MulderT/Lists/YourCalendarList/EditForm.aspx?ID=",
-    dateFormat: "DD/MM/YYYY",
-    timeFormat: "HH:mm",
-    filterField: "EventDate",
-    filterValue: "range:today:3months"
-},        debug: {
-                enabled: false, // Enable debug mode with console logging
-                level: "info" // Options: error, warn, info, debug
+            calendar: {
+                enabled: true,
+                listGuid: SETTINGS.listGuids.calendar,
+                container: "#calendar-container",
+                title: "Planning",
+                itemCount: 5,
+                showPagination: true,
+                baseUrl: SETTINGS.siteRoot,
+                addEventUrl: `${SETTINGS.siteRoot}/Lists/YourCalendarList/NewForm.aspx`,
+                editEventUrl: `${SETTINGS.siteRoot}/Lists/YourCalendarList/EditForm.aspx?ID=`,
+                dateFormat: "DD/MM/YYYY",
+                timeFormat: "HH:mm",
+                filterField: "EventDate",
+                filterValue: "range:today:3months"
+            },
+            debug: {
+                enabled: SETTINGS.debug,
+                level: "info"
             }
         };
+
+        // --- 4. Resource Loader Functies ---
+        // Helpt bij het laden van CSS en JS bestanden met de juiste paden
+        function loadCss(url) {
+            document.write('<link rel="stylesheet" href="' + url + '">');
+        }
         
-        // Apply theme immediately based on configuration
+        function loadJs(url) {
+            document.write('<script src="' + url + '"><\/script>');
+        }
+
+        // --- 5. Laden van Resources (Head) ---
+        
+        // Externe Fonts & Icons
+        loadCss("https://fonts.googleapis.com/icon?family=Material+Icons");
+        
+        // Applicatie Stijlen
+        loadCss(`${PATHS.menuAssets}/CSS/navigation-styles.css`);
+        loadCss(`${PATHS.menuAssets}/CSS/fix-theming.css`);
+
+        // Core Libraries (jQuery, Tailwind)
+        loadJs(`${PATHS.scripts}/jquery371min.js`);
+        loadJs(`${PATHS.menuAssets}/JS/tailwind-configuration.js`);
+        loadJs("https://cdn.tailwindcss.com");
+
+        // SharePoint Libraries
+        loadJs("/_layouts/15/init.js");
+        loadJs("/_layouts/15/MicrosoftAjax.js");
+        loadJs("/_layouts/15/sp.runtime.js");
+        loadJs("/_layouts/15/sp.js");
+
+    </script>
+</head>
+
+<body class="bg-gray-50 font-sans">
+    
+    <!-- Thema Toepassen -->
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const theme = CONFIG.branding.theme || "orange";
             document.documentElement.setAttribute('data-theme', theme);
             document.body.setAttribute('data-theme', theme);
-            
-            if (CONFIG.debug.enabled) {
-                console.log(`Applied theme: ${theme}`);
-            }
+            if (CONFIG.debug.enabled) console.log(`Thema toegepast: ${theme}`);
         });
     </script>
 
     <div class="min-h-screen">
-        <!-- Header with dynamic theme -->
+        <!-- Header met dynamisch thema -->
         <header id="page-header" class="sticky top-0 z-50 text-white shadow-md">
             <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
                 <h1 id="header-title" class="text-xl font-bold">Navigatie</h1>
@@ -98,40 +135,44 @@ calendar: {
             </div>
         </header>
 
-        <!-- Content Area -->
+        <!-- Content Gebied -->
         <div class="max-w-6xl mx-auto px-4 py-6">
-            <!-- Navigation Menu -->
+            <!-- Navigatie Menu -->
             <div class="mb-8">
                 <nav class="w-full">
                     <ul id="menu" class="space-y-1 rounded-lg overflow-hidden">
-                        <li class="text-center py-4">Loading navigation...</li>
+                        <li class="text-center py-4">Navigatie laden...</li>
                     </ul>
                 </nav>
             </div>
             
-            <!-- Calendar Container (Only rendered if enabled) -->
+            <!-- Kalender Container (Alleen zichtbaar indien ingeschakeld) -->
             <div id="calendar-container" class="hidden">
                 <div class="calendar-header">
-                    <h2 id="calendar-title">Upcoming Events</h2>
+                    <h2 id="calendar-title">Aankomende Evenementen</h2>
                     <button id="add-event-btn" class="hidden px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm flex items-center">
                         <span class="material-icons text-sm mr-1">add</span>
-                        Add Event
+                        Toevoegen
                     </button>
                 </div>
                 <ul id="calendar-events" class="calendar-event-list">
-                    <li class="text-center py-4">Loading events...</li>
+                    <li class="text-center py-4">Evenementen laden...</li>
                 </ul>
                 <div id="calendar-pagination" class="mt-4 text-center hidden">
-                    <button id="prev-page" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm">Previous</button>
-                    <button id="next-page" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded ml-2 text-sm">Next</button>
+                    <button id="prev-page" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm">Vorige</button>
+                    <button id="next-page" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded ml-2 text-sm">Volgende</button>
                 </div>
             </div>
         </div>
     </div>
 
-		<script src="https://som.org.om.local/sites/MulderT/CustomPW/HBS/MENU/JS/setup.js"></script>        
-		<script src="https://som.org.om.local/sites/MulderT/CustomPW/HBS/MENU/JS/iconMapping.js"></script>
-		<script src="https://som.org.om.local/sites/MulderT/CustomPW/HBS/MENU/JS/renderNav.js"></script>
-		<script src="https://som.org.om.local/sites/MulderT/CustomPW/HBS/MENU/JS/renderCal.js"></script>
+    <!-- --- 6. Laden van Applicatie Scripts (Body) --- -->
+    <script>
+        // Deze scripts worden geladen nadat de HTML is opgebouwd
+        loadJs(`${PATHS.menuAssets}/JS/setup.js`);
+        loadJs(`${PATHS.menuAssets}/JS/iconMapping.js`);
+        loadJs(`${PATHS.menuAssets}/JS/renderNav.js`);
+        loadJs(`${PATHS.menuAssets}/JS/renderCal.js`);
+    </script>
 </body>
 </html>

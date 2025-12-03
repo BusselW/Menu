@@ -27,7 +27,9 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <script src="https://som.org.om.local/sites/MulderT/CustomPW/HBS/CRUD/V2/3/crudBasis.js"></script>
-  <script>console.log("crudBasis.js script tag verwerkt (bevat globale functies).");</script>
+  <!-- DRY Fix: Laad iconMapping.js zodat we dezelfde iconen gebruiken als de viewer -->
+  <script src="https://som.org.om.local/sites/MulderT/CustomPW/HBS/MENU/JS/iconMapping.js"></script>
+  <script>console.log("crudBasis.js en iconMapping.js script tags verwerkt.");</script>
 
   <script>
     // Configureer Tailwind thema (onveranderd)
@@ -398,8 +400,20 @@
       parentFieldUsed: null // *** NIEUW: Houdt bij welk veld ('ParentID1' of 'ParentID') gebruikt is ***
     };
 
-    // Lijst met veelgebruikte iconen (onveranderd)
-    const commonIcons = [ 'home', 'house', 'cottage', 'apartment', 'people', 'person', 'group', 'groups', 'diversity_3', 'supervisor_account', 'psychology', 'engineering', 'school', 'biotech', 'business', 'description', 'assignment', 'menu_book', 'book', 'auto_stories', 'library_books', 'folder', 'folder_shared', 'content_paste', 'grading', 'event', 'calendar_today', 'calendar_month', 'schedule', 'today', 'gavel', 'rate_review', 'checklist', 'fact_check', 'verified', 'verified_user', 'thumb_up', 'task_alt', 'high_quality', 'devices', 'computer', 'memory', 'lan', 'desktop_windows', 'wifi', 'code', 'upload_file', 'download', 'cloud_upload', 'build', 'build_circle', 'handyman', 'settings_suggest', 'troubleshoot', 'report_problem', 'warning', 'error', 'place', 'map', 'location_on', 'explore', 'navigation', 'local_parking', 'traffic', 'speed', 'hearing', 'record_voice_over', 'mail', 'email', 'chat', 'forum', 'comment', 'phone', 'call', 'video_call', 'meeting_room', 'public', 'language', 'web_asset', 'link', 'support', 'contact_support', 'support_agent', 'help', 'settings', 'admin_panel_settings', 'dashboard', 'analytics', 'insights', 'trending_up', 'bar_chart', 'summarize', 'timeline', 'assignment_turned_in', 'format_list_bulleted', 'checklist_rtl', 'euro', 'payments', 'account_balance_wallet', 'savings', 'account_balance', 'security', 'policy', 'highlight', 'lightbulb', 'print', 'scanner', 'chevron_right', 'calculate', 'calculator', 'stacked_bar_chart', 'data_usage', 'data_exploration', 'functions', 'query_stats', 'pin', 'format_paint', 'construction', 'architecture', 'article', 'text_snippet', 'history_edu', 'receipt_long', 'shopping_cart', 'shopping_bag', 'storefront', 'local_shipping', 'receipt', 'paid', 'attach_money', 'price_check', 'credit_card', 'badge', 'card_membership', 'card_giftcard', 'redeem', 'loyalty', 'discount', 'percent', 'local_offer', 'sell', 'category', 'newspaper', 'feed', 'rss_feed', 'wysiwyg', 'model_training', 'app_registration', 'integration_instructions', 'developer_mode', 'smart_button', 'terminal', 'table_view', 'view_agenda', 'web', 'photo_camera', 'photo_library', 'picture_as_pdf', 'image', 'collections', 'videocam', 'video_library', 'subscriptions', 'movie', 'slideshow', 'mic', 'mic_external_on', 'headphones', 'headset', 'speaker', 'podcasts', 'music_note', 'queue_music', 'playlist_play', 'album', 'notes', 'sticky_note_2', 'push_pin', 'edit_note', 'note_add', 'list', 'playlist_add_check', 'add_task', 'playlist_add', 'post_add', 'data_object', 'api', 'data_array', 'key', 'vpn_key', 'cloud', 'cloud_sync', 'cloud_done', 'cloud_download', 'cloud_upload', 'admin_mdi', 'shield', 'gpp_good', 'work', 'work_outline', 'domain', 'business_center', 'corporate_fare', 'lab_profile', 'science', 'psychology_alt', 'design_services', 'anchor', 'sailing', 'directions_boat', 'kayaking', 'surfing', 'fastfood', 'restaurant', 'restaurant_menu', 'local_cafe', 'coffee', 'sports_bar', 'liquor', 'local_bar', 'wine_bar', 'bakery_dining', 'flight', 'flight_takeoff', 'flight_land', 'luggage', 'hotel', 'no_meeting_room', 'rv_hookup', 'villa', 'emoji_objects', 'emoji_events', 'emoji_flags', 'emoji_nature', 'emoji_people', 'emoji_symbols', 'emoji_transportation', 'emoji_food_beverage', 'emoji_emotions'];
+    // === DRY Implementatie: Iconen laden uit iconMapping.js ===
+    // In plaats van een hardcoded lijst, gebruiken we nu de keys van het iconMap object.
+    // Dit zorgt ervoor dat de editor altijd dezelfde iconen toont als de viewer.
+    let commonIcons = [];
+    
+    if (typeof iconMap !== 'undefined') {
+        // Filter 'default' eruit omdat dit geen echt icoon is, maar een fallback
+        commonIcons = Object.keys(iconMap).filter(icon => icon !== 'default');
+        console.log(`[Config] ${commonIcons.length} iconen geladen uit iconMapping.js`);
+    } else {
+        console.warn("[Config] iconMapping.js niet gevonden! Fallback naar basisset.");
+        // Fallback set voor als het script niet laadt
+        commonIcons = ['home', 'settings', 'info', 'help', 'menu', 'search', 'person', 'group', 'error', 'warning'];
+    }
 
     // SharePoint Menu Pad (onveranderd)
     const MENU_PATH = "https://som.org.om.local/sites/MulderT/CustomPW/HBS/MENU";
@@ -952,8 +966,17 @@
       const volgordeValue = document.getElementById("itemVolgordeID").value.trim();
       itemData.VolgordeID = volgordeValue === "" ? null : parseInt(volgordeValue);
       const parentIdValue = document.getElementById("itemParentID").value;
-      // === BLIJFT ParentID1 gebruiken voor de payload ===
-      itemData.ParentID1 = parentIdValue ? parseInt(parentIdValue) : null;
+      
+      // === GEWIJZIGD: Gebruik gedetecteerd veld voor payload ===
+      const parentField = huidigeLijstData.parentFieldUsed || 'ParentID1';
+      
+      // Als het veld 'ParentID' is (standaard SharePoint), moeten we waarschijnlijk naar 'ParentIDId' schrijven voor lookups
+      // Maar we proberen eerst de veldnaam zelf als het geen lookup lijkt, of 'Id' suffix als dat veiliger is.
+      // Voor nu: Als het ParentID1 is, gebruik ParentID1. Als het ParentID is, gebruik ParentIDId (standaard conventie voor lookup writes).
+      const writeField = parentField === 'ParentID' ? 'ParentIDId' : parentField;
+      
+      itemData[writeField] = parentIdValue ? parseInt(parentIdValue) : null;
+      
       const urlValue = document.getElementById("itemURL").value.trim();
 
       const saveBtn = document.getElementById("saveItemBtn"); saveBtn.disabled = true; saveBtn.innerHTML = `<span class="material-icons text-sm spin mr-1">refresh</span> Opslaan...`;
@@ -968,18 +991,20 @@
         if (veldInfo.isUrlType) { console.log(`[${functieNaam}] URL veld formatteren als FieldUrlValue.`); payload.URL = urlValue ? { __metadata: { type: "SP.FieldUrlValue" }, Url: urlValue, Description: payload.Title } : null; }
         else { console.log(`[${functieNaam}] URL veld formatteren als tekst/null.`); payload.URL = urlValue || null; }
 
-        // Zorg dat ParentID1 correct is (null of getal) - Dit is de waarde uit de dropdown
-        if ('ParentID1' in payload && payload.ParentID1 === null) {
-             payload.ParentID1 = null;
-             console.log(`[${functieNaam}] ParentID1 wordt expliciet null verzonden.`);
-        } else if (payload.ParentID1) {
-            console.log(`[${functieNaam}] ParentID1 wordt verzonden met waarde: ${payload.ParentID1}`);
+        // Logica voor ParentID validatie in payload
+        const parentField = huidigeLijstData.parentFieldUsed || 'ParentID1';
+        const writeField = parentField === 'ParentID' ? 'ParentIDId' : parentField;
+
+        if (writeField in payload && payload[writeField] === null) {
+             payload[writeField] = null;
+             console.log(`[${functieNaam}] ${writeField} wordt expliciet null verzonden.`);
+        } else if (payload[writeField]) {
+            console.log(`[${functieNaam}] ${writeField} wordt verzonden met waarde: ${payload[writeField]}`);
         } else {
-             console.log(`[${functieNaam}] ParentID1 is niet aanwezig of leeg in payload, wordt null.`);
-             payload.ParentID1 = null;
+             console.log(`[${functieNaam}] ${writeField} is niet aanwezig of leeg in payload, wordt null.`);
+             payload[writeField] = null;
         }
 
-        // LET OP: We sturen *geen* ParentID mee in de payload, alleen ParentID1.
         console.log(`[${functieNaam}] Payload voor opslaan:`, JSON.stringify(payload));
 
         let resultaat;

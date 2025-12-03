@@ -143,7 +143,7 @@ a:focus {
 /* Pagina header*/
 .page-header{
 	color: #000;
-	border: 1px;
+	border: 1px solid transparent;
 }
 
 /* Header styles */
@@ -152,7 +152,7 @@ a:focus {
     align-items: center;
     justify-content: space-between;
     background: linear-gradient(90deg, var(--color-header-start), var(--color-header-end));
-    color: #000; !important
+    color: #000 !important;
     padding: var(--spacing-sm) var(--spacing-md);
     width: 100%;
     max-width: var(--max-content-width);
@@ -528,7 +528,7 @@ a:focus {
 .add-event {
     margin-top: 16px;
     font-size: 14px;
-    color: var (--color-base);
+    color: var(--color-base);
     text-decoration: none;
     display: inline-block;
     padding: 4px 8px;
@@ -1080,8 +1080,8 @@ body.iframe-mode .nav__sub-list {
 		
 		.headerD{
 		max-width: 500px; /* Maximale breedte */
-		heigth: 1000px;
-		margin-left: left;
+		height: 1000px;
+		margin-left: 0;
 		margin-right: auto;
 		padding-left: 0.75rem; /* 4px */
 		padding-right: 0.75rem; /* Ruimte tussen woord 'navigatie' en de zijkant */
@@ -1122,6 +1122,6 @@ body.iframe-mode .nav__sub-list {
 }
 
 .agenda-container {
-	border:1 px;
+	border: 1px solid transparent;
 }
 
