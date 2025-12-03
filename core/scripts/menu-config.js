@@ -94,8 +94,16 @@
         mergeConfig(defaults, overrides) {
             const result = { ...defaults };
             
+            // List of keys that could lead to prototype pollution
+            const dangerousKeys = ['__proto__', 'constructor', 'prototype'];
+            
             for (const key in overrides) {
-                if (overrides.hasOwnProperty(key)) {
+                // Guard against prototype pollution
+                if (dangerousKeys.indexOf(key) !== -1) {
+                    continue;
+                }
+                
+                if (Object.prototype.hasOwnProperty.call(overrides, key)) {
                     if (typeof overrides[key] === 'object' && 
                         overrides[key] !== null && 
                         !Array.isArray(overrides[key]) &&
@@ -156,8 +164,16 @@
             const keys = key.split('.');
             let value = this.config;
             
+            // List of keys that could lead to prototype pollution
+            const dangerousKeys = ['__proto__', 'constructor', 'prototype'];
+            
             for (const k of keys) {
-                if (value && typeof value === 'object' && k in value) {
+                // Guard against prototype pollution
+                if (dangerousKeys.indexOf(k) !== -1) {
+                    return undefined;
+                }
+                
+                if (value && typeof value === 'object' && Object.prototype.hasOwnProperty.call(value, k)) {
                     value = value[k];
                 } else {
                     return undefined;
@@ -173,17 +189,43 @@
          * @param {*} value - New value
          */
         set(key, value) {
+            // List of keys that could lead to prototype pollution
+            const dangerousKeys = ['__proto__', 'constructor', 'prototype'];
+            
+            // Check key for dangerous values before processing
+            if (dangerousKeys.indexOf(key) !== -1) {
+                return; // Silently ignore attempts to set dangerous keys
+            }
+            
             const keys = key.split('.');
+            
+            // Check all path segments for dangerous values
+            for (let i = 0; i < keys.length; i++) {
+                if (dangerousKeys.indexOf(keys[i]) !== -1) {
+                    return; // Silently ignore attempts to set dangerous keys
+                }
+            }
+            
             let obj = this.config;
             
             for (let i = 0; i < keys.length - 1; i++) {
-                if (!(keys[i] in obj)) {
-                    obj[keys[i]] = {};
+                var currentKey = keys[i];
+                // Double-check this specific key is safe
+                if (dangerousKeys.indexOf(currentKey) !== -1) {
+                    return;
                 }
-                obj = obj[keys[i]];
+                if (!Object.prototype.hasOwnProperty.call(obj, currentKey)) {
+                    obj[currentKey] = {};
+                }
+                obj = obj[currentKey];
             }
             
-            obj[keys[keys.length - 1]] = value;
+            var finalKey = keys[keys.length - 1];
+            // Triple-check the final key is safe before assignment
+            if (dangerousKeys.indexOf(finalKey) !== -1) {
+                return;
+            }
+            obj[finalKey] = value;
         }
 
         /**
