@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Main Menu - SharePoint 2019</title>
+    
+    <!-- 
+        Main Menu for SharePoint Server 2019
+        
+        This file demonstrates how to create a specific menu instance
+        using the modular menu system. It:
+        1. Loads the core styles and scripts from the central folder
+        2. Loads the menu-specific configuration
+        3. Initializes the menu on the page
+        
+        To create a new menu:
+        1. Copy this file and rename it (e.g., footer-menu.html)
+        2. Create a corresponding config file (e.g., footer-menu-config.js)
+        3. Update the config with your data source and settings
+    -->
+    
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../core/styles/menu.css">
+    
+    <!-- Optional: Custom styles for this menu instance -->
+    <style>
+        /* Page wrapper styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        /* Main content area */
+        .page-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        /* Demo content */
+        .demo-section {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .demo-section h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .demo-section p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .demo-section code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        .demo-section pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        /* Theme customization example */
+        .sp-menu-container {
+            /* You can override CSS variables here for this specific menu instance */
+            /* --menu-primary-bg: #1a5276; */
+            /* --menu-primary-hover: #154360; */
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Container -->
+    <header>
+        <div id="main-menu" class="sp-menu-container">
+            <!-- Menu will be rendered here by JavaScript -->
+            <noscript>
+                <p style="padding: 16px; background: #fde7e9; color: #a80000;">
+                    JavaScript is required to display the navigation menu.
+                </p>
+            </noscript>
+        </div>
+    </header>
+    
+    <!-- Page Content -->
+    <main class="page-content">
+        <section class="demo-section">
+            <h2>SharePoint 2019 Menu System</h2>
+            <p>
+                This is a modular, 3-layer navigation menu designed for SharePoint Server 2019.
+                The menu system follows the DRY (Don't Repeat Yourself) principle and consists of:
+            </p>
+            <ul>
+                <li><strong>Core Styles</strong> (<code>core/styles/menu.css</code>) - Defines the visual appearance</li>
+                <li><strong>Menu Configuration</strong> (<code>core/scripts/menu-config.js</code>) - Default settings and behavior</li>
+                <li><strong>Data Retrieval</strong> (<code>core/scripts/data-retrieval.js</code>) - Handles data fetching from various sources</li>
+                <li><strong>Menu Engine</strong> (<code>core/scripts/menu-engine.js</code>) - Core functionality and rendering</li>
+            </ul>
+        </section>
+        
+        <section class="demo-section">
+            <h2>Creating Your Own Menu</h2>
+            <p>To create a new menu instance:</p>
+            <ol>
+                <li>Copy <code>main-menu.html</code> to a new file</li>
+                <li>Copy <code>main-menu-config.js</code> to a new file</li>
+                <li>Update the configuration with your data source (static, JSON, SharePoint, or API)</li>
+                <li>Include the core scripts and your config file in the HTML</li>
+            </ol>
+            
+            <h3>Example: Using SharePoint List</h3>
+            <pre>const MENU_CONFIG = {
+    dataSource: {
+        type: 'sharepoint'
+    },
+    sharePoint: {
+        enabled: true,
+        siteUrl: 'https://yourtenant.sharepoint.com/sites/yoursite',
+        listName: 'NavigationMenu',
+        selectFields: ['Title', 'Url', 'ParentId', 'Order', 'OpenInNewTab'],
+        orderBy: 'Order',
+        ascending: true
+    }
+};</pre>
+
+            <h3>Example: Using JSON File</h3>
+            <pre>const MENU_CONFIG = {
+    dataSource: {
+        type: 'json',
+        url: '/data/menu-data.json'
+    }
+};</pre>
+
+            <h3>Example: Using REST API</h3>
+            <pre>const MENU_CONFIG = {
+    dataSource: {
+        type: 'api',
+        url: 'https://api.example.com/menu',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer your-token'
+        }
+    }
+};</pre>
+        </section>
+        
+        <section class="demo-section">
+            <h2>Menu Features</h2>
+            <ul>
+                <li><strong>3-Layer Navigation</strong> - Supports up to 3 levels of nested menus</li>
+                <li><strong>Hover or Click Trigger</strong> - Configurable submenu behavior</li>
+                <li><strong>Keyboard Navigation</strong> - Arrow keys, Tab, Escape support</li>
+                <li><strong>Responsive Design</strong> - Mobile-friendly with hamburger menu</li>
+                <li><strong>Accessibility</strong> - ARIA attributes and screen reader support</li>
+                <li><strong>Theming</strong> - CSS variables for easy customization</li>
+                <li><strong>Caching</strong> - Built-in data caching for performance</li>
+            </ul>
+        </section>
+        
+        <section class="demo-section">
+            <h2>Keyboard Navigation</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd;">Key</th>
+                        <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><code>←</code> / <code>→</code></td><td style="padding: 8px; border-bottom: 1px solid #eee;">Navigate between items</td></tr>
+                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><code>↓</code></td><td style="padding: 8px; border-bottom: 1px solid #eee;">Open submenu / Move down in submenu</td></tr>
+                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><code>↑</code></td><td style="padding: 8px; border-bottom: 1px solid #eee;">Move up in submenu</td></tr>
+                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><code>Enter</code> / <code>Space</code></td><td style="padding: 8px; border-bottom: 1px solid #eee;">Activate item or toggle submenu</td></tr>
+                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><code>Escape</code></td><td style="padding: 8px; border-bottom: 1px solid #eee;">Close all submenus</td></tr>
+                    <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><code>Home</code></td><td style="padding: 8px; border-bottom: 1px solid #eee;">Go to first item</td></tr>
+                    <tr><td style="padding: 8px;"><code>End</code></td><td style="padding: 8px;">Go to last item</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    
+    <!-- Core Scripts (order matters) -->
+    <script src="../core/scripts/menu-config.js"></script>
+    <script src="../core/scripts/data-retrieval.js"></script>
+    <script src="../core/scripts/menu-engine.js"></script>
+    
+    <!-- Menu-specific configuration -->
+    <script src="main-menu-config.js"></script>
+    
+    <!-- Initialize the menu -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create and initialize the main menu
+            try {
+                var mainMenu = new SPMenu.MenuEngine('#main-menu', MainMenuConfig);
+                mainMenu.init().then(function() {
+                    console.log('Main menu ready');
+                }).catch(function(error) {
+                    console.error('Failed to initialize menu:', error);
+                });
+                
+                // Expose menu instance for debugging
+                window.mainMenu = mainMenu;
+            } catch (error) {
+                console.error('Menu initialization error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
